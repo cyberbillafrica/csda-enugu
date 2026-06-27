@@ -1,6 +1,6 @@
 :root {
     --gov-green: #0f9d45;
-    --gov-green-dark: #08752f;
+    --gov-green-dark: #033d17;
     --ez-red: red;
     --ez-gold: #ffc107;
     --ez-dark: #212529;
@@ -18,7 +18,7 @@ body {
 /* Header */
 
 header {
-    background: linear-gradient(90deg, var(--ez-red), var(--gov-green));
+    background: linear-gradient(90deg, var(--gov-green-dark), var(--gov-green));
 }
 
 
@@ -88,119 +88,68 @@ table {
 }
 
 /* FOOTER */
-
 footer {
-
-    margin-top: 50px;
-
-    background: linear-gradient(
-        90deg,
-        var(--gov-green-dark),
-        var(--gov-green)
-    );
-
-    color:white;
-
-    padding:30px 20px 0;
-
+  margin-top: 50px;
+  background: linear-gradient(90deg, var(--gov-green-dark), var(--gov-green));
+  color: white;
+  padding: 30px 20px 0;
 }
+
 /* Tomorrow text */
-
 .footer-title {
-
-    text-align:center;
-
-    font-size:28px;
-
-    font-weight:bold;
-
-    letter-spacing:2px;
-
-    padding:30px 10px;
-
-    margin:0 10px 15px;
-
-    border-radius:10px;
-
+  text-align: center;
+  font-size: 36px;
+  font-weight: bold;
+  font-style: italic;
+  letter-spacing: 0.8em;        /* spreads letters wide */
+  padding: 40px 10px;
+  margin: 0 10px 20px;
+  border-radius: 10px;
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.4), 
+               0 0 8px rgba(255,255,255,0.3); /* NEW: shadow + glow */
 }
+
 
 /* Images area */
-
 .footer-images {
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    gap:20px;
-
-    padding:0 20px;
-
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 0 20px;
 }
 
 .footer-images img {
-
-    width:90px;
-
-    height:90px;
-
-    object-fit:cover;
-
-    border-radius:10px;
-
+  width: 140px;                 /* larger, almost touching text above */
+  height: 140px;
+  object-fit: cover;
+  border-radius: 10px;
 }
 
-/* Copyright */
-
+/* Copyright bottom bar */
 .footer-bottom {
-
-    margin-top:30px;
-
-    background:var(--ez-red);
-
-    color:white;
-
-    text-align:center;
-
-    
-    font-size:14px;
-
+  margin-top: 30px;
+  background: var(--ez-red);    /* full red strip at bottom */
+  color: white;
+  text-align: center;
+  font-size: 14px;
+  padding: 10px 0;              /* ensures it covers edge neatly */
 }
 
-/* Mobile */
+.footer-bottom a {
+  color: blue !important;       /* designer name in blue */
+  font-weight: bold;
+  text-decoration: none;
+}
 
+/* Mobile tweaks */
 @media(max-width:576px){
-    .hero {
-
-        padding:50px 15px;
-
-    }
-
-    .footer-title {
-
-        font-size:22px;
-
-        margin-left:5px;
-
-        margin-right:5px;
-
-    }
-
-    .footer-images {
-
-        padding:0;
-
-    }
-
-    .footer-images img {
-
-        width:85px;
-
-        height:85px;
-
-    }
-
-
+  .footer-title {
+    font-size: 26px;
+    letter-spacing: 0.5em;      /* still spaced but tighter for small screens */
+  }
+  .footer-images img {
+    width: 110px;
+    height: 110px;
+  }
 }

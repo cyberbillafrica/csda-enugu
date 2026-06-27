@@ -22,28 +22,28 @@
     <div class="row g-4">
 
         <div class="col-md-3">
-            <div class="card shadow p-4 text-center">
+            <div class="card card-staff shadow p-4 text-center">
                 <h6>Total Applications</h6>
                 <h2 id="totalApplications">0</h2>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="card shadow p-4 text-center">
+            <div class="card card-admin shadow p-4 text-center">
                 <h6>Shortlisted</h6>
                 <h2 id="shortlistedCount">0</h2>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="card shadow p-4 text-center">
+            <div class="card card-live shadow p-4 text-center">
                 <h6>Selected</h6>
                 <h2 id="selectedCount">0</h2>
             </div>
         </div>
 
         <div class="col-md-3">
-            <div class="card shadow p-4 text-center">
+            <div class="card card-queue shadow p-4 text-center">
                 <h6>Rejected</h6>
                 <h2 id="rejectedCount">0</h2>
             </div>
@@ -52,25 +52,27 @@
     </div>
 
     <!-- Quick Actions -->
-    <div class="card shadow p-4 mt-5">
+    <div class="card card-comments shadow p-4 mt-5">
         <h4>Quick Actions</h4>
 
-        <div class="mt-3 d-flex flex-wrap gap-2">
-            <a href="applications.html" class="btn btn-success">
-                Manage Applications
-            </a>
+    <div class="mt-3 d-flex flex-wrap gap-2">
+  <a href="applications.html" class="btn btn-danger flex-fill flex-sm-grow-0">
+    Manage Applications
+  </a>
 
-            <button id="exportCSV" class="btn btn-dark">
-                Export CSV
-            </button>
+  <button id="exportCSV" class="btn btn-dark flex-fill flex-sm-grow-0">
+    Export CSV
+  </button>
 
-            <button id="printShortlisted" class="btn btn-primary">
-                Print Shortlisted
-            </button>
+  <button id="printShortlisted" class="btn btn-primary flex-fill flex-sm-grow-0">
+    Print Shortlisted
+  </button>
 
-            <button id="printSelected" class="btn btn-warning">
-                Print Selected
-            </button>
+  <button id="printSelected" class="btn btn-warning flex-fill flex-sm-grow-0">
+    Print Selected
+  </button>
+</div>
+
         </div>
     </div>
 
