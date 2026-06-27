@@ -43,6 +43,21 @@
                         <option>Female</option>
                     </select>
                 </div>
+
+                <div class="col-md-6">
+    <label for="lga">LGA</label>
+    <select class="form-control" id="lga" required>
+        <option value="">Select LGA</option>
+    </select>
+</div>
+
+<div class="col-md-4">
+    <label for="ward">Ward</label>
+    <select class="form-control" id="ward" required disabled>
+        <option value="">Select Ward</option>
+    </select>
+</div>
+
   
                 <div class="col-md-4">
                     <label>Village</label>
@@ -167,5 +182,65 @@
 <script type="module" src="assets/supabase.js"></script>
 <script type="module" src="assets/app.js"></script>
 
+// Official INEC Enugu State LGAs and Wards Mapping
+<script>
+    
+    const enuguData = {
+    "Aninri": ["Oduma I", "Oduma II", "Oduma III", "Oduma IV", "Nnenwe I", "Nnenwe II", "Nnenwe III", "Ndeaboh", "Okpanku", "Mpu"],
+    "Awgu": ["Awgu I", "Awgu II", "Mgbowo", "Mgbidi/Mmaku", "Agudu/Gbaogkun", "Anuka", "Owelli/Amoli/Gbaogkun", "Ugbo", "Ogugu", "Agbogugu", "Ihe", "Ogbaku"],
+    "Enugu East": ["Abakpa I", "Abakpa II", "Umuchigbo", "Amoke/Nike-Uno", "Mbulu-Inyi", "Mbulujodo", "Nike-Uno", "Ugwuogo", "Ibagwa", "Amurunze", "Ono-Nike"],
+    "Enugu North": ["Asata Ward 1", "Umunevo Ward 2", "Ihewuzi Ward 3", "Onu Asata Ward 4", "Ogui Township Ward 13", "New Layout Ward 8", "China Town Ward 9", "New Haven Ward 10", "Iva Valley/Udi Siding/Hilltop Ward 12"],
+    "Enugu South": ["Achara Layout East", "Achara Layout West", "Akwuke", "Amechi I", "Amechi II", "Awkunanaw East", "Awkunanaw West", "Ogbete East", "Ogbete West", "Uwani S/W", "Uwani N/E", "Ugwuaji"],
+    "Ezeagu": ["Agbaogwugwu", "Aguobu-Owa I", "Aguobu-Owa II", "Amansiodo", "Awlaw", "Imezi-Owa I", "Imezi-Owa II", "Mgbagbu-Owa I", "Mgbagbu-Owa II", "Obeagu Umana", "Obinofia", "Oghe I", "Oghe II", "Okpogho", "Olo/Amagu", "Umana Ndiagu", "Umumba Ndiuno"],
+    "Igbo-Etiti": ["Aku I", "Aku II", "Aku III", "Aku IV", "Aku V", "Diogbe/Umunko", "Ejuoha/Udeme", "Ekwegbe I", "Ekwegbe II", "Ikolo/Ohebe", "Ohaodo I", "Ohaodo II", "Onyohor/Ochima/Idoha", "Ozalla I", "Ozalla II", "Ukehe I", "Ukehe II", "Ukehe III"],
+    "Igbo-Eze North": ["Essodo I", "Essodo II", "Ette I", "Ette II", "Ezzodo", "Ogrute I", "Ogrute II", "Umuitodo I", "Umuitodo II", "Umuozzi I", "Umuozzi II", "Umuozzi III", "Umuozzi IV", "Umuozzi V", "Umuozzi VI", "Umuozzi VII", "Umuozzi VIII"],
+    "Igbo-Eze South": ["Alor-Agu", "Amachara", "Echara", "Ibagwa-Aka I", "Ibagwa-Aka II", "Iheaka", "Iheakpu-Awka", "Itchi", "Ovoko I", "Ovoko II", "Uhunowerre"],
+    "Isi-Uzo": ["Amanyi", "Eha-Amufu I", "Eha-Amufu II", "Eha-Amufu III", "Ikem I", "Ikem II", "Mbu I", "Mbu II", "Obollo-Afor", "Obollo-Eke", "Obollo-Etiti"],
+    "Nkanu East": ["Amechi-Idodo/Amagunze", "Amagunze", "Akpafu", "Ihuonyia", "Nara", "Nkerefi", "Ogbahu", "Ohei", "Oruku", "Ugbawka", "Umuawalagu"],
+    "Nkanu West": ["Agbani", "Akpugo I", "Akpugo II", "Akpugo III", "Amurri", "Awkunanaw", "Imezi-Awkunanaw", "Nnewe", "Obuoffia", "Obe", "Ozalla"],
+    "Nsukka": ["Agbi", "Alor-Uno", "Anuka", "Eha-Alumona", "Eha-Ndiagu", "Ibagwa-Ani", "Lejja", "Nsukka I", "Nsukka II", "Obimo/Ikwoka", "Obukpa", "Opi", "Okpuje/Anuka"],
+    "Oji River": ["Achi Agu", "Achi Uno I", "Achi Uno II", "Awlaw", "Inyi I", "Inyi II", "Oji River Urban", "Ugwuoba I", "Ugwuoba II", "Onyema"],
+    "Udenu": ["Amalla", "Igugu", "Imilike-Ani", "Imilike-Enu", "Obollo-Afor", "Obollo-Eke", "Obollo-Etiti", "Orba I", "Orba II", "Udunedem", "Umu-Alor"],
+    "Udi": ["Abor", "Awhum", "Eke", "Enezike", "Nachis", "Ngwo Asa", "Ngwo Uno", "Nsude", "Oghu", "Udi/Agbudu", "Ukana", "Umuabi", "Umuaga", "Umuneda"],
+    "Uzo-Uwani": ["Adani", "Asaba", "Igga/Asaba", "Nimbo", "Nkpologu", "Ogba/Ugwuwaru", "Ogurugu", "Ukpabi/Nimbo", "Umulokpa", "Uvuru"]
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+    const lgaSelect = document.getElementById("lga");
+    const wardSelect = document.getElementById("ward");
+
+    // 1. Populate LGAs Dropdown
+    Object.keys(enuguData).sort().forEach(lga => {
+        const option = document.createElement("option");
+        option.value = lga;
+        option.textContent = lga;
+        lgaSelect.appendChild(option);
+    });
+
+    // 2. Handle Cascading Selection for Wards
+    lgaSelect.addEventListener("change", function() {
+        const selectedLga = this.value;
+
+        // Reset and clear existing Wards
+        wardSelect.innerHTML = '<option value="">Select Ward</option>';
+        
+        if (selectedLga && enuguData[selectedLga]) {
+            // Enable dropdown and populate
+            wardSelect.disabled = false;
+            enuguData[selectedLga].sort().forEach(ward => {
+                const option = document.createElement("option");
+                option.value = ward;
+                option.textContent = ward;
+                wardSelect.appendChild(option);
+            });
+        } else {
+            // Disable if no LGA is selected
+            wardSelect.disabled = true;
+        }
+    });
+});
+</script>
+
+    
 </body>
 </html>
