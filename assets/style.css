@@ -98,10 +98,10 @@ footer {
 /* Tomorrow text */
 .footer-title {
   text-align: center;
-  font-size: 36px;
+  font-size: 30px;
   font-weight: bold;
   font-style: italic;
-  letter-spacing: 0.8em;        /* spreads letters wide */
+  letter-spacing: 0.6em;        /* spreads letters wide */
   padding: 40px 10px;
   margin: 0 10px 20px;
   border-radius: 10px;
@@ -133,7 +133,7 @@ footer {
   color: white;
   text-align: center;
   font-size: 14px;
-  padding: 10px 0;              /* ensures it covers edge neatly */
+  padding: 1px 0;              /* ensures it covers edge neatly */
 }
 
 .footer-bottom a {
