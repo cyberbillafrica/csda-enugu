@@ -1,0 +1,63 @@
+body {
+    background: #f4f7f9;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background: linear-gradient(90deg, #0b7d32, #169b45);
+}
+
+.hero {
+    padding: 80px 20px;
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+}
+
+.btn {
+    border-radius: 10px;
+}
+
+table {
+    background: white;
+}
+
+footer {
+    margin-top: 50px;
+    background: #111;
+    color: white;
+    padding: 30px 20px;
+    position: relative;
+}
+
+.footer-title {
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.footer-left {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+}
+
+.footer-right {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+}
+
+.footer-left img,
+.footer-right img {
+    width: 70px;
+    border-radius: 8px;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 14px;
+}
