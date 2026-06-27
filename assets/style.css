@@ -1,7 +1,7 @@
 :root {
     --gov-green: #0f9d45;
     --gov-green-dark: #08752f;
-    --ez-red: #dc3545;
+    --ez-red: red;
     --ez-gold: #ffc107;
     --ez-dark: #212529;
 }
@@ -18,7 +18,7 @@ body {
 /* Header */
 
 header {
-    background: linear-gradient(90deg, var(--gov-green-dark), var(--gov-green));
+    background: linear-gradient(90deg, var(--ez-red), var(--gov-green));
 }
 
 
@@ -114,11 +114,11 @@ footer {
 
     font-weight:bold;
 
-    letter-spacing:1px;
+    letter-spacing:2px;
 
-    padding:20px 10px;
+    padding:30px 10px;
 
-    margin:0 20px 25px;
+    margin:0 10px 15px;
 
     border-radius:10px;
 
@@ -164,8 +164,7 @@ footer {
 
     text-align:center;
 
-    padding:15px;
-
+    
     font-size:14px;
 
 }
@@ -197,9 +196,9 @@ footer {
 
     .footer-images img {
 
-        width:75px;
+        width:85px;
 
-        height:75px;
+        height:85px;
 
     }
 
