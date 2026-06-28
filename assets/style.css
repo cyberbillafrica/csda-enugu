@@ -38,6 +38,13 @@ header {
     transition: .3s ease;
 }
 
+.kard {
+    border: none;
+    border-left: 5px solid var(--gov-green);
+    border-radius: 15px;
+    transition: .3s ease;
+}
+
 
 .card:hover {
     transform: translateY(-5px);
@@ -87,10 +94,6 @@ table {
     background: white;
 }
 
-
-
-
-
 /* FOOTER */
 footer{
     margin-top:50px;
@@ -110,21 +113,17 @@ footer{
 .footer-title{
     text-align:center;
     font-size:42px;
-    font-weight:700;
+    font-weight:400;
     font-style:italic;
     letter-spacing:.25em;
     white-space:nowrap;          /* Keep on one line */
-    padding:40px 0 20px;
+    padding:5px 0 20px;
     margin:0;
     text-shadow:
         2px 2px 6px rgba(0,0,0,.4),
         0 0 10px rgba(255,255,255,.35);
 }
 
-.footer-title.card-admin{
-    border-bottom:4px solid var(--ez-red);
-    color:var(--ez-red);
-}
 
 /* Images */
 .footer-images{
@@ -145,8 +144,8 @@ footer{
 
 /* Center text */
 .footer-center-text{
-    font-size:38px;
-    font-weight:900;
+    font-size:30px;
+    font-weight:700;
     color:var(--ez-red);
     text-align:center;
     min-width:220px;
@@ -185,8 +184,11 @@ footer{
     }
 
     .footer-images{
-        flex-direction:column;
-        gap:20px;
+        display:flex;
+        flex-direction:row;
+        justify-content:space-between;
+        align-items:center;
+        width:100%;
     }
 
     .footer-images img{
