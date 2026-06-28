@@ -87,86 +87,120 @@ table {
     background: white;
 }
 
+
+
+
+
 /* FOOTER */
-footer {
-  margin-top: 50px;
-  background: linear-gradient(90deg, var(--gov-green-dark), var(--gov-green));
-  color: white;
-  padding: 30px 20px 0;
+footer{
+    margin-top:50px;
+    background:linear-gradient(90deg,var(--gov-green-dark),var(--gov-green));
+    color:#fff;
+    padding:30px 0 0;   /* Remove horizontal padding */
+}
+
+/* Inner footer content */
+.footer-content{
+    max-width:1200px;
+    margin:auto;
+    padding:0 20px;
 }
 
 /* Tomorrow text */
-.footer-title {
-  text-align: center;
-  font-size: 42px;
-  font-weight: bold;
-  font-style: italic;
-  letter-spacing: 0.9em;        /* wide spacing so it stretches */
-  padding: 50px 10px 20px;
-  margin: 0;
-  text-shadow: 2px 2px 6px rgba(0,0,0,0.4),
-               0 0 10px rgba(255,255,255,0.4);
+.footer-title{
+    text-align:center;
+    font-size:42px;
+    font-weight:700;
+    font-style:italic;
+    letter-spacing:.25em;
+    white-space:nowrap;          /* Keep on one line */
+    padding:40px 0 20px;
+    margin:0;
+    text-shadow:
+        2px 2px 6px rgba(0,0,0,.4),
+        0 0 10px rgba(255,255,255,.35);
 }
 
-.footer-title.card-admin {
-  border-bottom: 4px solid var(--ez-red);
-  color: var(--ez-red);
+.footer-title.card-admin{
+    border-bottom:4px solid var(--ez-red);
+    color:var(--ez-red);
 }
 
-/* Images area */
-.footer-images {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  padding: 0 20px;
+/* Images */
+.footer-images{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:40px;
+    flex-wrap:wrap;
+    padding:20px;
 }
 
-.footer-images img {
-  width: 180px;                 /* larger images */
-  height: 180px;
-  object-fit: cover;
-  border-radius: 10px;
+.footer-images img{
+    width:170px;
+    height:170px;
+    object-fit:cover;
+    border-radius:12px;
 }
 
-/* Center text between images */
-.footer-center-text {
-  font-size: 40px;
-  font-weight: 900;
-  color: var(--ez-red);
-  text-align: center;
-  margin: 20px 0;
+/* Center text */
+.footer-center-text{
+    font-size:38px;
+    font-weight:900;
+    color:var(--ez-red);
+    text-align:center;
+    min-width:220px;
 }
 
-/* Copyright bottom bar */
-.footer-bottom {
-  margin-top: 40px;
-  background: var(--ez-red);
-  color: white;
-  text-align: center;
-  font-size: 18px;              /* bigger text */
-  padding: 25px 0;              /* taller strip */
-  width: 100%;                  /* full width */
-  border-top: 3px solid gold;   /* thin gold line separator */
+/* Copyright bar */
+.footer-bottom{
+    margin-top:40px;
+    width:100%;
+    background:var(--ez-red);
+    color:#fff;
+    text-align:center;
+    font-size:18px;
+    padding:22px 15px;
+    border-top:3px solid gold;
+    box-sizing:border-box;
 }
 
-.footer-bottom a {
-  color: blue !important;       /* designer name in blue */
-  font-weight: bold;
-  text-decoration: none;
+.footer-bottom a{
+    color:#007bff;
+    font-weight:bold;
+    text-decoration:none;
 }
 
-/* Mobile tweaks */
-@media(max-width:576px){
-  .footer-title {
-    font-size: 28px;
-    letter-spacing: 0.5em;
-  }
-  .footer-images img {
-    width: 130px;
-    height: 130px;
-  }
-  .footer-center-text {
-    font-size: 28px;
-  }
+.footer-bottom a:hover{
+    text-decoration:underline;
+}
+
+/* Mobile */
+@media (max-width:576px){
+
+    .footer-title{
+        font-size:22px;
+        letter-spacing:.08em;   /* Much smaller spacing */
+        padding:30px 8px 15px;
+    }
+
+    .footer-images{
+        flex-direction:column;
+        gap:20px;
+    }
+
+    .footer-images img{
+        width:120px;
+        height:120px;
+    }
+
+    .footer-center-text{
+        font-size:26px;
+        min-width:auto;
+    }
+
+    .footer-bottom{
+        font-size:15px;
+        padding:18px 10px;
+    }
 }
