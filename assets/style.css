@@ -98,17 +98,20 @@ footer {
 /* Tomorrow text */
 .footer-title {
   text-align: center;
-  font-size: 30px;
+  font-size: 42px;
   font-weight: bold;
   font-style: italic;
-  letter-spacing: 0.6em;        /* spreads letters wide */
-  padding: 40px 10px;
-  margin: 0 10px 20px;
-  border-radius: 10px;
-  text-shadow: 2px 2px 6px rgba(0,0,0,0.4), 
-               0 0 8px rgba(255,255,255,0.3); /* NEW: shadow + glow */
+  letter-spacing: 0.9em;        /* wide spacing so it stretches */
+  padding: 50px 10px 20px;
+  margin: 0;
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.4),
+               0 0 10px rgba(255,255,255,0.4);
 }
 
+.footer-title.card-admin {
+  border-bottom: 4px solid var(--ez-red);
+  color: var(--ez-red);
+}
 
 /* Images area */
 .footer-images {
@@ -120,20 +123,31 @@ footer {
 }
 
 .footer-images img {
-  width: 140px;                 /* larger, almost touching text above */
-  height: 140px;
+  width: 180px;                 /* larger images */
+  height: 180px;
   object-fit: cover;
   border-radius: 10px;
 }
 
+/* Center text between images */
+.footer-center-text {
+  font-size: 40px;
+  font-weight: 900;
+  color: var(--ez-red);
+  text-align: center;
+  margin: 20px 0;
+}
+
 /* Copyright bottom bar */
 .footer-bottom {
-  margin-top: 30px;
-  background: var(--ez-red);    /* full red strip at bottom */
+  margin-top: 40px;
+  background: var(--ez-red);
   color: white;
   text-align: center;
-  font-size: 14px;
-  padding: 1px 0;              /* ensures it covers edge neatly */
+  font-size: 18px;              /* bigger text */
+  padding: 25px 0;              /* taller strip */
+  width: 100%;                  /* full width */
+  border-top: 3px solid gold;   /* thin gold line separator */
 }
 
 .footer-bottom a {
@@ -145,11 +159,14 @@ footer {
 /* Mobile tweaks */
 @media(max-width:576px){
   .footer-title {
-    font-size: 26px;
-    letter-spacing: 0.5em;      /* still spaced but tighter for small screens */
+    font-size: 28px;
+    letter-spacing: 0.5em;
   }
   .footer-images img {
-    width: 110px;
-    height: 110px;
+    width: 130px;
+    height: 130px;
+  }
+  .footer-center-text {
+    font-size: 28px;
   }
 }
