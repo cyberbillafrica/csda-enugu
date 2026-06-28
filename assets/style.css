@@ -178,27 +178,33 @@ footer{
 @media (max-width:576px){
 
     .footer-title{
-        font-size:22px;
-        letter-spacing:.08em;   /* Much smaller spacing */
-        padding:30px 8px 15px;
+        font-size:18px;
+        letter-spacing:.50em;   /* Much smaller spacing */
+        padding:0 8px;
+        margin-left:-8px;
+        margin-right:-8px;
+        margin-top:-10px;
+        margin-bottom:25px;
+        width:100%;
     }
 
     .footer-images{
         display:flex;
-        flex-direction:row;
         justify-content:space-between;
         align-items:center;
-        width:100%;
     }
 
     .footer-images img{
-        width:120px;
-        height:120px;
+        width:80px;
+        height:80px;
+        flex-shrink:0;
     }
 
     .footer-center-text{
-        font-size:26px;
-        min-width:auto;
+        font-size:18px;
+        min-width:0;
+        flex:1;
+        text-align:center;
     }
 
     .footer-bottom{
