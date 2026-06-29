@@ -471,6 +471,17 @@ function addAdminPanelButton() {
     }
 }
 
+function showWelcomeMessage() {
+    const welcomeCard = document.getElementById('welcomeCard');
+    if (welcomeCard && window.currentStaff) {
+        document.getElementById('staffName').textContent = window.currentStaff.full_name || "Admin";
+        document.getElementById('staffRole').textContent = 
+            window.currentStaff.role === "super_admin" ? "Super Administrator" : "Staff";
+        
+        welcomeCard.classList.remove('d-none');
+    }
+}
+
 /* ===================================
    INIT
 =================================== */
@@ -508,6 +519,18 @@ function addAdminPanelButton() {
         }
         return;
     }
+
+    if (currentPage === "dashboard.html" || currentPage === "") {
+    if (document.getElementById("wardAnalytics")) loadDashboard();
+    if (document.getElementById("applicationsTable")) loadApplications();
+
+    if (window.currentStaff) {
+        showWelcomeMessage();
+        if (window.currentStaff.role === "super_admin") {
+            addAdminPanelButton();
+        }
+    }
+}
 
     // Other pages
     if (document.getElementById("staffTable")) {
