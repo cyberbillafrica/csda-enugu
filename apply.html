@@ -35,9 +35,10 @@
     <h2>CSDA Empowerment Application Form</h2>
 </header>
 
+
 <div class="container py-5">
 
-    <div class="card shadow p-4">
+    <div class="card kard card-admin shadow p-4">
 
         <form id="applicationForm">
 
@@ -46,62 +47,63 @@
             <div class="row g-3">
 
                 <div class="col-md-6">
-                    <label>Full Name</label>
-                    <input class="form-control" type="text" id="full_name" required>
+                    <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                    <input type="text" id="full_name" class="form-control" placeholder="Enter your full name" required>
                 </div>
 
                 <div class="col-md-3">
-                    <label>Age</label>
-                    <input class="form-control" type="number" id="age" min="18" max="60" required>
+                    <label class="form-label">Age <span class="text-danger">*</span></label>
+                    <input type="number" id="age" class="form-control" min="18" max="60" placeholder="18-60" required>
                 </div>
 
                 <div class="col-md-3">
-                    <label>Gender</label>
-                    <select class="form-control" id="gender" required>
+                    <label class="form-label">Gender <span class="text-danger">*</span></label>
+                    <select class="form-select" id="gender" required>
                         <option value="">Select Gender</option>
-                        <option>Male</option>
-                        <option>Female</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
                     </select>
                 </div>
 
                 <div class="col-md-6">
-    <label for="lga">LGA</label>
-    <select class="form-control" id="lga" required>
-        <option value="">Select LGA</option>
-    </select>
-</div>
-
-<div class="col-md-4">
-    <label for="ward">Ward</label>
-    <select class="form-control" id="ward" required disabled>
-        <option value="">Select Ward</option>
-    </select>
-</div>
-
-  
-                <div class="col-md-4">
-                    <label>Village</label>
-                    <input class="form-control" type="text" id="village" required>
+                    <label class="form-label">LGA <span class="text-danger">*</span></label>
+                    <select class="form-select" id="lga" required>
+                        <option value="">Select LGA</option>
+                        <!-- Options will be populated by JS -->
+                    </select>
                 </div>
 
                 <div class="col-md-4">
-                    <label>Community</label>
-                    <input class="form-control" type="text" id="community" required>
+                    <label class="form-label">Ward <span class="text-danger">*</span></label>
+                    <select class="form-select" id="ward" required disabled>
+                        <option value="">Select Ward</option>
+                        <!-- Populated based on LGA -->
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Village <span class="text-danger">*</span></label>
+                    <input type="text" id="village" class="form-control" placeholder="Enter village" required>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Community <span class="text-danger">*</span></label>
+                    <input type="text" id="community" class="form-control" placeholder="Enter community" required>
                 </div>
 
                 <div class="col-md-6">
-                    <label>State</label>
-                    <input class="form-control" type="text" value="Enugu" readonly>
+                    <label class="form-label">State</label>
+                    <input type="text" class="form-control" value="Enugu" readonly>
                 </div>
 
                 <div class="col-md-6">
-                    <label>Phone Number</label>
-                    <input class="form-control" type="tel" id="phone" required>
+                    <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+                    <input type="tel" id="phone" class="form-control" placeholder="080XXXXXXXX" required>
                 </div>
 
                 <div class="col-md-6">
-                    <label>NIN</label>
-                    <input class="form-control" type="text" id="nin" maxlength="11" required>
+                    <label class="form-label">NIN <span class="text-danger">*</span></label>
+                    <input type="text" id="nin" class="form-control" maxlength="11" placeholder="Enter 11-digit NIN" required>
                 </div>
 
             </div>
@@ -111,22 +113,18 @@
             <h4 class="mb-4">Bank Details</h4>
 
             <div class="row g-3">
-
                 <div class="col-md-4">
-                    <label>Account Name</label>
-                    <input class="form-control" type="text" id="account_name" required>
+                    <label class="form-label">Account Name <span class="text-danger">*</span></label>
+                    <input type="text" id="account_name" class="form-control" placeholder="Account name" required>
                 </div>
-
                 <div class="col-md-4">
-                    <label>Account Number</label>
-                    <input class="form-control" type="text" id="account_number" required>
+                    <label class="form-label">Account Number <span class="text-danger">*</span></label>
+                    <input type="text" id="account_number" class="form-control" maxlength="10" placeholder="10 digits" required>
                 </div>
-
                 <div class="col-md-4">
-                    <label>Bank Name</label>
-                    <input class="form-control" type="text" id="bank_name" required>
+                    <label class="form-label">Bank Name <span class="text-danger">*</span></label>
+                    <input type="text" id="bank_name" class="form-control" placeholder="e.g. Access Bank" required>
                 </div>
-
             </div>
 
             <hr class="my-4">
@@ -136,42 +134,45 @@
             <div class="row g-3">
 
                 <div class="col-md-6">
-                    <label>Skill Type</label>
-                    <input class="form-control" type="text" id="skill_type" required>
+                    <label class="form-label">Skill Type <span class="text-danger">*</span></label>
+                    <input type="text" id="skill_type" class="form-control" placeholder="e.g. Tailoring, Hairdressing, Welding" required>
                 </div>
 
                 <div class="col-md-6">
-                    <label>Empowerment Choice</label>
-                    <select class="form-control" id="empowerment_choice" required>
+                    <label class="form-label">Empowerment Choice <span class="text-danger">*</span></label>
+                    <select class="form-select" id="empowerment_choice" required>
                         <option value="">Select Option</option>
-                        <option>Sewing Machine</option>
-                        <option>Hairdressing Machine</option>
-                        <option>Grinding Machine</option>
-                        <option>Vulcanizing Machine</option>
-                        <option>Business Grant</option>
+                        <option value="Sewing Machine">Sewing Machine</option>
+                        <option value="Hairdressing Machine">Hairdressing Machine</option>
+                        <option value="Grinding Machine">Grinding Machine</option>
+                        <option value="Vulcanizing Machine">Vulcanizing Machine</option>
+                        <option value="Business Grant">Business Grant</option>
                     </select>
                 </div>
 
                 <div class="col-md-6">
-                    <label>Upload Skill Evidence</label>
-                    <input class="form-control" type="file" id="skill_evidence" accept=".jpg,.jpeg,.png,.pdf" required>
+                    <label class="form-label">Upload Skill Evidence (Max 1MB) <span class="text-danger">*</span></label>
+                    <small class="text-muted">You can add many picture in pdf and send</small>
+                   <input type="file" id="skill_evidence" class="form-control" accept=".jpg,.jpeg,.png,.pdf" required>
+                    <small class="text-muted">Allowed: JPG, JPEG, PNG, PDF (Max File Size 1MB)</small>
                 </div>
 
                 <div class="col-md-6">
-                    <label>Upload Passport Photograph</label>
-                    <input class="form-control" type="file" id="passport" accept=".jpg,.jpeg,.png" required>
+                    <label class="form-label">Upload Passport Photograph (Max 500KB) <span class="text-danger">*</span></label>
+                    <input type="file" id="passport" class="form-control" accept=".jpg,.jpeg,.png" required>
+                    <small class="text-muted">Allowed: JPG, PNG (Max 500KB)</small>
                 </div>
 
             </div>
 
             <div class="form-check mt-4">
                 <input class="form-check-input" type="checkbox" id="declaration" required>
-                <label class="form-check-label">
+                <label class="form-check-label" for="declaration">
                     I declare that the information provided is true and accurate.
                 </label>
             </div>
 
-            <button class="btn w-100 mt-4 py-3" style="background-color: var(--gov-green); border-color: var(--gov-green); color: #fff;" type="submit">
+            <button type="submit" class="btn w-100 mt-4 py-3" style="background-color: var(--gov-green); border-color: var(--gov-green); color: #fff;">
                 Submit Application
             </button>
 
@@ -352,6 +353,65 @@ document.addEventListener("DOMContentLoaded", () => {
             wardSelect.disabled = true;
         }
     });
+});
+
+
+
+// File Size Validation + Passport Preview
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Skill Evidence (Max 1MB)
+    const skillEvidence = document.getElementById('skill_evidence');
+    skillEvidence.addEventListener('change', function() {
+        if (this.files[0]) {
+            if (this.files[0].size > 1024 * 1024) { // 1MB
+                alert("❌ Skill Evidence file is too large!\n\nMaximum allowed size is 1MB.");
+                this.value = ''; // Clear the input
+            }
+        }
+    });
+
+    // Passport Photo (Max 500KB) + Preview
+    const passportInput = document.getElementById('passport');
+    const passportPreviewContainer = document.createElement('div');
+    passportPreviewContainer.id = 'passportPreview';
+    passportPreviewContainer.className = 'mt-2 text-center';
+    passportPreviewContainer.style.display = 'none';
+    
+    // Insert preview container after passport input
+    passportInput.parentNode.appendChild(passportPreviewContainer);
+
+    passportInput.addEventListener('change', function() {
+        const previewDiv = document.getElementById('passportPreview');
+        
+        if (this.files[0]) {
+            const file = this.files[0];
+
+            // File size check (500KB)
+            if (file.size > 500 * 1024) {
+                alert("❌ Passport photograph is too large!\n\nMaximum allowed size is 500KB.");
+                this.value = '';
+                previewDiv.style.display = 'none';
+                return;
+            }
+
+            // Show image preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewDiv.innerHTML = `
+                    <small class="text-success">Passport Preview:</small><br>
+                    <img src="${e.target.result}" 
+                         style="max-width: 150px; max-height: 180px; border: 2px solid #ddd; border-radius: 8px; margin-top: 8px;" 
+                         alt="Passport Preview">
+                `;
+                previewDiv.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            previewDiv.style.display = 'none';
+        }
+    });
+
 });
 </script>
 
