@@ -415,6 +415,110 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-    
+    <script>
+// ====================== APPLICATION FORM SUBMISSION ======================
+document.getElementById('applicationForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+
+    try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Submitting Application...
+        `;
+
+        // Collect form data
+        const formData = {
+            full_name: document.getElementById('full_name').value.trim(),
+            age: parseInt(document.getElementById('age').value),
+            gender: document.getElementById('gender').value,
+            lga: document.getElementById('lga').value,
+            ward: document.getElementById('ward').value,
+            village: document.getElementById('village').value.trim(),
+            community: document.getElementById('community').value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+            nin: document.getElementById('nin').value.trim(),
+            account_name: document.getElementById('account_name').value.trim(),
+            account_number: document.getElementById('account_number').value.trim(),
+            bank_name: document.getElementById('bank_name').value.trim(),
+            skill_type: document.getElementById('skill_type').value.trim(),
+            empowerment_choice: document.getElementById('empowerment_choice').value,
+            status: "pending",
+            shortlisted: false,
+            selected: false,
+            rejected: false
+        };
+
+        const skillFile = document.getElementById('skill_evidence').files[0];
+        const passportFile = document.getElementById('passport').files[0];
+
+        if (!skillFile || !passportFile) {
+            alert("Please upload both Skill Evidence and Passport Photograph.");
+            return;
+        }
+
+        // === UPLOAD TO RESPECTIVE BUCKETS ===
+        
+        // Upload Skill Evidence
+        const skillFileName = `skill_${Date.now()}_${skillFile.name.replace(/\s+/g, '_')}`;
+        const { error: skillError } = await supabase.storage
+            .from('skill-evidence')
+            .upload(skillFileName, skillFile, { upsert: true });
+
+        if (skillError) throw skillError;
+
+        const skill_evidence_url = supabase.storage
+            .from('skill-evidence')
+            .getPublicUrl(skillFileName).data.publicUrl;
+
+        // Upload Passport
+        const passportFileName = `passport_${Date.now()}_${passportFile.name.replace(/\s+/g, '_')}`;
+        const { error: passportError } = await supabase.storage
+            .from('passports')
+            .upload(passportFileName, passportFile, { upsert: true });
+
+        if (passportError) throw passportError;
+
+        const passport_url = supabase.storage
+            .from('passports')
+            .getPublicUrl(passportFileName).data.publicUrl;
+
+        // === INSERT INTO DATABASE ===
+        const { error: dbError } = await supabase
+            .from('applications')
+            .insert([{
+                ...formData,
+                skill_evidence_url,
+                passport_url,
+                created_at: new Date().toISOString()
+            }]);
+
+        if (dbError) throw dbError;
+
+        // SUCCESS
+        alert("✅ Application submitted successfully!\n\nThank you for applying. We will review your application soon.");
+        
+        // Reset form
+        this.reset();
+        document.getElementById('passportPreview').style.display = 'none';
+
+        // Better Success Redirect (after 1.5 seconds)
+        setTimeout(() => {
+            window.location.href = "index.html";   // Change to your home/success page if you have one
+        }, 1500);
+
+    } catch (error) {
+        console.error("Submission Error:", error);
+        alert("❌ Failed to submit application:\n" + error.message);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+    }
+});
+</script>
+
 </body>
 </html>
