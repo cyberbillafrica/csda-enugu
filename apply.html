@@ -487,16 +487,20 @@ document.getElementById('applicationForm').addEventListener('submit', async func
             .getPublicUrl(passportFileName).data.publicUrl;
 
         // === INSERT INTO DATABASE ===
-        const { error: dbError } = await supabase
-            .from('applications')
-            .insert([{
-                ...formData,
-                skill_evidence_url,
-                passport_url,
-                created_at: new Date().toISOString()
-            }]);
+    const { data, error: dbError } = await supabase
+    .from('applications')
+    .insert([{
+        ...formData,
+        skill_evidence_url,
+        passport_url,
+        created_at: new Date().toISOString()
+    }])
+    .select();
 
-        if (dbError) throw dbError;
+    if (dbError) {
+    console.error("DB Error:", dbError);
+    throw dbError;
+    }
 
         // SUCCESS
         alert("✅ Application submitted successfully!\n\nThank you for applying. We will review your application soon.");
@@ -507,8 +511,8 @@ document.getElementById('applicationForm').addEventListener('submit', async func
 
         // Better Success Redirect (after 1.5 seconds)
         setTimeout(() => {
-            window.location.href = "index.html";   // Change to your home/success page if you have one
-        }, 1500);
+            window.location.href = "success.html";   // Change to your home/success page if you have one
+        }, 1000);
 
     } catch (error) {
         console.error("Submission Error:", error);
