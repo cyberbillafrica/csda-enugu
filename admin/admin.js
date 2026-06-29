@@ -458,8 +458,7 @@ if (filterBtn) {
 =================================== */
 (async () => {
     if (!window.location.pathname.includes("login.html")
-        && !window.location.pathname.includes("register.html")
-        && !window.location.pathname.includes("admin.html")) {
+        && !window.location.pathname.includes("register.html")) {
         await protectRoute();
     }
 
