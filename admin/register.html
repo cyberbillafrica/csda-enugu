@@ -114,6 +114,95 @@
             toggleBtn.innerHTML = '<i class="bi bi-eye"></i>';
         }
     });
+
+    
+// ====================== STAFF REGISTRATION HANDLER ======================
+document.getElementById('registerForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+
+    try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Registering...
+        `;
+
+        const inviteCode = document.getElementById('invite_code').value.trim().toUpperCase();
+        const fullName = document.getElementById('full_name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const password = document.getElementById('password').value;
+
+        // Validate Invite Code (optional: you can check if it exists first)
+        const { data: invite, error: inviteError } = await supabase
+            .from('staff_invites')
+            .select('*')
+            .eq('invite_code', inviteCode)
+            .eq('used', false)
+            .single();
+
+        if (inviteError || !invite) {
+            throw new Error("Invalid or expired invite code.");
+        }
+
+        // Create Auth User
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+                data: { full_name: fullName }
+            }
+        });
+
+        if (authError) throw authError;
+
+        // Insert into staff table
+        const { error: staffError } = await supabase
+            .from('staff')
+            .insert([{
+                auth_id: authData.user.id,
+                full_name: fullName,
+                email: email,
+                phone: phone,
+                role: invite.role,
+                lga: invite.lga,
+                ward: invite.ward,
+                active: true
+            }]);
+
+        if (staffError) throw staffError;
+
+        // Mark invite as used
+        await supabase
+            .from('staff_invites')
+            .update({ used: true })
+            .eq('invite_code', inviteCode);
+
+        // SUCCESS
+        submitBtn.innerHTML = `✅ Registration Successful!`;
+        submitBtn.classList.remove('btn-success');
+        submitBtn.classList.add('btn-outline-success');
+
+        alert("🎉 Registration successful!\n\nYou can now login with your email and password.");
+
+        // Auto redirect to login after 2 seconds
+        setTimeout(() => {
+            window.location.href = "login.html";
+        }, 2000);
+
+    } catch (error) {
+        console.error(error);
+        alert("❌ Registration failed: " + error.message);
+        
+        // Reset button
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+    }
+});
+
 </script>
 
 </body>
