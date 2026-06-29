@@ -422,13 +422,36 @@ document.getElementById('applicationForm').addEventListener('submit', async func
 
     const submitBtn = this.querySelector('button[type="submit"]');
     const originalBtnText = submitBtn.innerHTML;
+    const progressBarContainer = document.createElement('div');
+    progressBarContainer.className = 'mt-3';
+    progressBarContainer.innerHTML = `
+        <div class="progress" style="height: 8px;">
+            <div id="uploadProgress" class="progress-bar progress-bar-striped progress-bar-animated" 
+                 role="progressbar" style="width: 0%">0%</div>
+        </div>
+        <small class="text-muted" id="progressText">Uploading files...</small>
+    `;
+
+    submitBtn.parentNode.appendChild(progressBarContainer);
+    const progressBar = document.getElementById('uploadProgress');
+    const progressText = document.getElementById('progressText');
 
     try {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = `
-            <span class="spinner-border spinner-border-sm me-2"></span>
-            Uploading files & submitting...
-        `;
+        submitBtn.innerHTML = `Submitting...`;
+
+        // === Duplicate Check using NIN ===
+        const nin = document.getElementById('nin').value.trim();
+        const { data: existing } = await supabase
+            .from('applications')
+            .select('id')
+            .eq('nin', nin)
+            .limit(1);
+
+        if (existing && existing.length > 0) {
+            alert("❌ You have already submitted an application with this NIN.");
+            return;
+        }
 
         const skillFile = document.getElementById('skill_evidence').files[0];
         const passportFile = document.getElementById('passport').files[0];
@@ -439,31 +462,46 @@ document.getElementById('applicationForm').addEventListener('submit', async func
         }
 
         // Upload Skill Evidence
+        progressText.textContent = "Uploading Skill Evidence...";
         const skillFileName = `skill_${Date.now()}_${skillFile.name.replace(/\s+/g, '_')}`;
+        
         const { error: skillError } = await supabase.storage
             .from('skill-evidence')
-            .upload(skillFileName, skillFile, { upsert: true });
+            .upload(skillFileName, skillFile, { 
+                upsert: true,
+                onUploadProgress: (progress) => {
+                    const percent = Math.round((progress.loaded / progress.total) * 100);
+                    progressBar.style.width = percent + "%";
+                    progressBar.textContent = percent + "%";
+                }
+            });
 
-        if (skillError) throw new Error("Skill upload failed: " + skillError.message);
+        if (skillError) throw skillError;
 
-        const skill_evidence_url = supabase.storage
-            .from('skill-evidence')
-            .getPublicUrl(skillFileName).data.publicUrl;
+        const skill_evidence_url = supabase.storage.from('skill-evidence').getPublicUrl(skillFileName).data.publicUrl;
 
         // Upload Passport
+        progressText.textContent = "Uploading Passport...";
         const passportFileName = `passport_${Date.now()}_${passportFile.name.replace(/\s+/g, '_')}`;
+        
         const { error: passportError } = await supabase.storage
             .from('passports')
-            .upload(passportFileName, passportFile, { upsert: true });
+            .upload(passportFileName, passportFile, { 
+                upsert: true,
+                onUploadProgress: (progress) => {
+                    const percent = Math.round((progress.loaded / progress.total) * 100);
+                    progressBar.style.width = percent + "%";
+                    progressBar.textContent = percent + "%";
+                }
+            });
 
-        if (passportError) throw new Error("Passport upload failed: " + passportError.message);
+        if (passportError) throw passportError;
 
-        const passport_url = supabase.storage
-            .from('passports')
-            .getPublicUrl(passportFileName).data.publicUrl;
+        const passport_url = supabase.storage.from('passports').getPublicUrl(passportFileName).data.publicUrl;
 
-        // Insert into applications table
-        const formData = {
+        // Insert into database
+        progressText.textContent = "Saving application...";
+        const formData = { /* ... same as before ... */ 
             full_name: document.getElementById('full_name').value.trim(),
             age: parseInt(document.getElementById('age').value),
             gender: document.getElementById('gender').value,
@@ -472,7 +510,7 @@ document.getElementById('applicationForm').addEventListener('submit', async func
             village: document.getElementById('village').value.trim(),
             community: document.getElementById('community').value.trim(),
             phone: document.getElementById('phone').value.trim(),
-            nin: document.getElementById('nin').value.trim(),
+            nin: nin,
             account_name: document.getElementById('account_name').value.trim(),
             account_number: document.getElementById('account_number').value.trim(),
             bank_name: document.getElementById('bank_name').value.trim(),
@@ -483,31 +521,24 @@ document.getElementById('applicationForm').addEventListener('submit', async func
             status: "pending",
             shortlisted: false,
             selected: false,
-            rejected: false,
-            created_at: new Date().toISOString()
+            rejected: false
         };
 
-        const { error: dbError } = await supabase
-            .from('applications')
-            .insert([formData]);
+        const { error: dbError } = await supabase.from('applications').insert([formData]);
 
         if (dbError) throw dbError;
 
-        // SUCCESS
-        alert("✅ Application submitted successfully!");
-        this.reset();
-        document.getElementById('passportPreview').style.display = 'none';
-
-        setTimeout(() => {
-            window.location.href = "success.html"; // or "thank-you.html"
-        }, 1000);
+        // SUCCESS - Redirect to success.html
+        window.location.href = "success.html";
 
     } catch (error) {
-        console.error("Submission Error:", error);
+        console.error(error);
         alert("❌ " + error.message);
     } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalBtnText;
+        // Remove progress bar after completion
+        setTimeout(() => progressBarContainer.remove(), 1000);
     }
 });
 </script>
