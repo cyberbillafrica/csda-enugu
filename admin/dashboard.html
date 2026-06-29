@@ -6,7 +6,6 @@
 <title>CSDA Dashboard</title>
 
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
 <meta name="keywords" content="CSDA Enugu Dashboard, Empowerment Management, Applications, Enugu State">
 <meta name="description" content="Access the CSDA Enugu dashboard to manage applications, view eligibility criteria, and track empowerment program progress.">
 
@@ -21,20 +20,26 @@
 <meta name="twitter:description" content="Manage applications and track empowerment programs via the CSDA Enugu dashboard." />
 <meta name="twitter:image" content="https://cyberbillafrica.github.io/csda-enugu/assets/logo.png" />
 
-
-
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 <link rel="stylesheet" href="../assets/style.css">
+
 <!-- Favicon -->
-    <link href="assets/logo.png" type="image/x-icon" rel="icon">
+<link href="../assets/logo.png" type="image/x-icon" rel="icon">
 </head>
 <body>
 
-<header class="text-white text-center py-4 shadow">
+<header class="text-white text-center py-4 shadow position-relative">
     <img src="../assets/logo.png" width="100" class="mb-2">
     <h2>CSDA Admin Dashboard</h2>
     <p>Application Management Portal</p>
+
+    <!-- Logout Button in Header -->
+    <div class="position-absolute top-0 end-0 mt-3 me-4">
+        <button onclick="logout()" class="btn btn-danger btn-sm">
+            <i class="bi bi-box-arrow-right"></i> Logout
+        </button>
+    </div>
 </header>
 
 <div class="container py-5">
@@ -76,24 +81,22 @@
     <div class="card card-comments shadow p-4 mt-5">
         <h4>Quick Actions</h4>
 
-    <div class="mt-3 d-flex flex-wrap gap-2">
-  <a href="applications.html" class="btn btn-danger flex-fill flex-sm-grow-0">
-    Manage Applications
-  </a>
+        <div class="mt-3 d-flex flex-wrap gap-2">
+            <a href="applications.html" class="btn btn-danger flex-fill flex-sm-grow-0">
+                Manage Applications
+            </a>
 
-  <button id="exportCSV" class="btn btn-dark flex-fill flex-sm-grow-0">
-    Export CSV
-  </button>
+            <button id="exportCSV" class="btn btn-dark flex-fill flex-sm-grow-0">
+                Export CSV
+            </button>
 
-  <button id="printShortlisted" class="btn btn-primary flex-fill flex-sm-grow-0">
-    Print Shortlisted
-  </button>
+            <button id="printShortlisted" class="btn btn-primary flex-fill flex-sm-grow-0">
+                Print Shortlisted
+            </button>
 
-  <button id="printSelected" class="btn btn-warning flex-fill flex-sm-grow-0">
-    Print Selected
-  </button>
-</div>
-
+            <button id="printSelected" class="btn btn-warning flex-fill flex-sm-grow-0">
+                Print Selected
+            </button>
         </div>
     </div>
 
@@ -111,14 +114,12 @@
                         <th>Selected</th>
                     </tr>
                 </thead>
-
                 <tbody id="wardAnalytics"></tbody>
             </table>
         </div>
     </div>
 
 </div>
-
 
 <!-- FOOTER -->
 <footer>
@@ -144,8 +145,8 @@
   </div>
 </footer>
 
-
 <script type="module" src="../assets/supabase.js"></script>
 <script type="module" src="admin.js"></script>
+
 </body>
 </html>
