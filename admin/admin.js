@@ -123,8 +123,13 @@ async function protectRoute() {
    ROLE GUARD
 =================================== */
 function requireSuperAdmin() {
+    if (!window.currentStaff) {
+        window.location.href = "login.html";
+        return;
+    }
+
     if (window.currentStaff.role !== "super_admin") {
-        alert("Access denied.");
+        alert("Access denied. This area is for Super Admins only.");
         window.location.href = "dashboard.html";
     }
 }
@@ -453,23 +458,58 @@ if (filterBtn) {
     });
 }
 
+
+function addAdminPanelButton() {
+    const quickActionsContainer = document.querySelector('.d-flex.flex-wrap.gap-2');
+    
+    if (quickActionsContainer) {
+        const adminBtn = document.createElement('a');
+        adminBtn.href = "admin.html";
+        adminBtn.className = "btn btn-info flex-fill flex-sm-grow-0";
+        adminBtn.innerHTML = `<i class="bi bi-gear-fill"></i> Admin Panel`;
+        quickActionsContainer.appendChild(adminBtn);
+    }
+}
+
 /* ===================================
    INIT
 =================================== */
 (async () => {
-    if (!window.location.pathname.includes("login.html")
-        && !window.location.pathname.includes("register.html")) {
+    const pathname = window.location.pathname.toLowerCase();
+    const currentPage = pathname.split("/").pop() || "dashboard.html";
+
+    // Protect all authenticated pages
+    if (!pathname.includes("login.html") && !pathname.includes("register.html")) {
         await protectRoute();
     }
 
-    if (document.getElementById("wardAnalytics")) {
-        loadDashboard();
+    // ADMIN PAGE - Super Admin Only
+    if (currentPage === "admin.html") {
+        requireSuperAdmin();
+        if (document.getElementById("staffTable")) {
+            loadStaff();
+            loadInvites();
+        }
+        return;
     }
 
-    if (document.getElementById("applicationsTable")) {
-        loadApplications();
+    // DASHBOARD - Accessible by ALL staff (including Super Admin)
+    if (currentPage === "dashboard.html" || currentPage === "") {
+        if (document.getElementById("wardAnalytics")) {
+            loadDashboard();
+        }
+        if (document.getElementById("applicationsTable")) {
+            loadApplications();
+        }
+
+        // Show Admin Panel button for Super Admin only
+        if (window.currentStaff?.role === "super_admin") {
+            addAdminPanelButton();
+        }
+        return;
     }
 
+    // Other pages
     if (document.getElementById("staffTable")) {
         requireSuperAdmin();
         loadStaff();
