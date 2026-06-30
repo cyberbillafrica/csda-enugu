@@ -50,6 +50,43 @@ header {
     transform: translateY(-5px);
 }
 
+/* New Card Variants */
+
+.card-mission {
+    border-left: 5px solid #0d6efd;
+    border-bottom: none;
+}
+
+.card-vision {
+    border-left: 5px solid #ffc107;
+    border-bottom: none;
+}
+
+.card-values {
+    border-left: 5px solid #dc3545;
+    border-bottom: none;
+}
+
+.card-project {
+    border-top: 5px solid var(--gov-green);
+    border-bottom: none;
+}
+
+.card-contact {
+    border-left: 5px solid var(--gov-green-dark);
+    border-bottom: none;
+}
+
+.card-highlight {
+    background: linear-gradient(
+        135deg,
+        rgba(15,157,69,.06),
+        rgba(255,255,255,1)
+    );
+    border-left: 5px solid var(--gov-green);
+    border-bottom: none;
+}
+
 
 /* Card headings */
 
@@ -213,6 +250,86 @@ footer{
     }
 }
 
+ /*** Team ***/
+.team-carousel {
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+}
+
+.team-track {
+    display: flex;
+    gap: 25px;
+    width: max-content;
+    animation: teamScroll 30s linear infinite;
+}
+
+.team-item {
+    min-width: 350px;
+    background: #fff;
+    box-shadow: 0 0 45px rgba(0, 0, 0, .08);
+    flex-shrink: 0;
+}
+
+.team-item img {
+    border-radius: 8px 60px 0 0;
+    object-fit: cover;
+    height: 280px;
+}
+
+.team-item .team-social {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background: #FFFFFF;
+    padding-top: 15px;
+}
+
+.team-item .team-social a {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.team-item h5 {
+    font-weight: 700;
+    color: var(--gov-green-dark);
+}
+
+.team-item span {
+    color: #6c757d;
+    font-size: 14px;
+}
+
+/* Infinite scroll */
+@keyframes teamScroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* Pause on hover */
+.team-carousel:hover .team-track {
+    animation-play-state: paused;
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+    .team-item {
+        min-width: 280px;
+    }
+
+    .team-item img {
+        height: 220px;
+    }
+}
+
 .activity-carousel {
   overflow: hidden;
   position: relative;
@@ -264,4 +381,101 @@ footer{
   .activity-item p {
     font-size: 13px;
   }
+}
+
+
+
+/* ====================== PROJECT CARDS - RESPONSIVE & UNIFORM ====================== */
+.card-project {
+    height: 100% !important;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.card-project:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* Uniform Image with Responsive Aspect Ratio */
+.card-project img {
+    width: 100% !important;
+    height: 220px !important;           /* Base height for larger screens */
+    object-fit: cover;
+    object-position: center;
+    flex-shrink: 0;
+}
+
+/* Make it more responsive using aspect-ratio (modern browsers) */
+@supports (aspect-ratio: 16/10) {
+    .card-project img {
+        height: auto !important;
+        aspect-ratio: 16 / 10;           /* Wide landscape - good for projects */
+    }
+}
+
+/* Card Body */
+.card-project .p-4 {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1.35rem !important;
+}
+
+.card-project h5 {
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+    line-height: 1.35;
+    font-weight: 600;
+}
+
+.card-project p {
+    flex-grow: 1;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    margin-bottom: 0;
+}
+
+/* Badge */
+.card-project .badge {
+    font-size: 0.78rem;
+    padding: 6px 14px;
+    border-radius: 30px;
+}
+
+/* ====================== MOBILE RESPONSIVENESS ====================== */
+
+@media (max-width: 768px) {
+    .card-project img {
+        height: 200px !important;
+    }
+    
+    .card-project .p-4 {
+        padding: 1.1rem !important;
+    }
+    
+    .card-project h5 {
+        font-size: 1.05rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .card-project img {
+        height: 190px !important;
+    }
+    
+    .card-project .p-4 {
+        padding: 1rem !important;
+    }
+}
+
+/* Optional: Slightly larger images on very large screens */
+@media (min-width: 1200px) {
+    .card-project img {
+        height: 245px !important;
+    }
 }
