@@ -154,7 +154,7 @@
 
                 <div class="col-md-6">
                     <label class="form-label">Upload Skill Evidence (Max 1MB) <span class="text-danger">*</span></label>
-                    <small class="text-muted">You can add many picture in pdf and send</small>
+                    <small class="text-muted">Upload photo of your business or you doing your job. You can add many picture in pdf and send provided you stay withing size limit</small>
                    <input type="file" id="skill_evidence" class="form-control" accept=".jpg,.jpeg,.png,.pdf" required>
                     <small class="text-muted">Allowed: JPG, JPEG, PNG, PDF (Max File Size 1MB)</small>
                 </div>
@@ -418,32 +418,94 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
     <script>
-// ====================== APPLICATION FORM SUBMISSION ======================
+
+// ====================== GOOGLE DRIVE UPLOAD HELPERS ======================
+async function uploadFileToDrive(file, prefix) {
+    const filename = `${prefix}_${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+
+    // 1. Get resumable upload URL
+    const linkRes = await fetch('/api/upload-links', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            filename, 
+            mimeType: file.type 
+        }),
+    });
+
+    if (!linkRes.ok) throw new Error('Failed to get upload link');
+    const { driveUploadUrl } = await linkRes.json();
+
+    // 2. Upload file
+    const uploadRes = await fetch(driveUploadUrl, {
+        method: 'PUT',
+        body: file,
+        headers: {
+            'Content-Type': file.type,
+            'Content-Length': file.size.toString(),
+        },
+    });
+
+    if (!uploadRes.ok) throw new Error('File upload failed');
+
+    return filename;
+}
+
+// ====================== MAIN FORM SUBMISSION ======================
 document.getElementById('applicationForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
     const submitBtn = this.querySelector('button[type="submit"]');
     const originalBtnText = submitBtn.innerHTML;
-    const progressBarContainer = document.createElement('div');
-    progressBarContainer.className = 'mt-3';
-    progressBarContainer.innerHTML = `
-        <div class="progress" style="height: 8px;">
-            <div id="uploadProgress" class="progress-bar progress-bar-striped progress-bar-animated" 
-                 role="progressbar" style="width: 0%">0%</div>
+    const progressContainer = document.createElement('div');
+    progressContainer.className = 'mt-3';
+    progressContainer.innerHTML = `
+        <div class="progress" style="height: 10px;">
+            <div id="uploadProgress" class="progress-bar progress-bar-striped progress-bar-animated bg-success" 
+                 style="width: 0%">0%</div>
         </div>
-        <small class="text-muted" id="progressText">Uploading files...</small>
+        <small id="progressText" class="text-muted">Preparing upload...</small>
     `;
+    submitBtn.parentNode.appendChild(progressContainer);
 
-    submitBtn.parentNode.appendChild(progressBarContainer);
     const progressBar = document.getElementById('uploadProgress');
     const progressText = document.getElementById('progressText');
 
     try {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = `Submitting...`;
+        submitBtn.innerHTML = "Uploading files...";
 
-        // === Duplicate Check using NIN ===
+        const skillFile = document.getElementById('skill_evidence').files[0];
+        const passportFile = document.getElementById('passport').files[0];
+
+        if (!skillFile || !passportFile) {
+            throw new Error("Both files are required.");
+        }
+
+        // === UPLOAD FILES ===
+        progressText.textContent = "Uploading Skill Evidence...";
+        const skillFilename = await uploadFileToDrive(skillFile, 'skill');
+
+        progressText.textContent = "Uploading Passport...";
+        const passportFilename = await uploadFileToDrive(passportFile, 'passport');
+
+        // === GET PUBLIC LINKS ===
+        progressText.textContent = "Finalizing...";
+        const linkRes = await fetch('/api/get-drive-links', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                filenames: [skillFilename, passportFilename] 
+            }),
+        });
+
+        const { links } = await linkRes.json();
+        const skill_evidence_url = links[0];
+        const passport_url = links[1];
+
+        // === NIN DUPLICATE CHECK + DATABASE INSERT ===
         const nin = document.getElementById('nin').value.trim();
+
         const { data: existing } = await supabase
             .from('applications')
             .select('id')
@@ -451,59 +513,10 @@ document.getElementById('applicationForm').addEventListener('submit', async func
             .limit(1);
 
         if (existing && existing.length > 0) {
-            alert("❌ You have already submitted an application with this NIN.");
-            return;
+            throw new Error("You have already submitted an application with this NIN.");
         }
 
-        const skillFile = document.getElementById('skill_evidence').files[0];
-        const passportFile = document.getElementById('passport').files[0];
-
-        if (!skillFile || !passportFile) {
-            alert("Please upload both required files.");
-            return;
-        }
-
-        // Upload Skill Evidence
-        progressText.textContent = "Uploading Skill Evidence...";
-        const skillFileName = `skill_${Date.now()}_${skillFile.name.replace(/\s+/g, '_')}`;
-        
-        const { error: skillError } = await supabase.storage
-            .from('skill-evidence')
-            .upload(skillFileName, skillFile, { 
-                upsert: true,
-                onUploadProgress: (progress) => {
-                    const percent = Math.round((progress.loaded / progress.total) * 100);
-                    progressBar.style.width = percent + "%";
-                    progressBar.textContent = percent + "%";
-                }
-            });
-
-        if (skillError) throw skillError;
-
-        const skill_evidence_url = supabase.storage.from('skill-evidence').getPublicUrl(skillFileName).data.publicUrl;
-
-        // Upload Passport
-        progressText.textContent = "Uploading Passport...";
-        const passportFileName = `passport_${Date.now()}_${passportFile.name.replace(/\s+/g, '_')}`;
-        
-        const { error: passportError } = await supabase.storage
-            .from('passports')
-            .upload(passportFileName, passportFile, { 
-                upsert: true,
-                onUploadProgress: (progress) => {
-                    const percent = Math.round((progress.loaded / progress.total) * 100);
-                    progressBar.style.width = percent + "%";
-                    progressBar.textContent = percent + "%";
-                }
-            });
-
-        if (passportError) throw passportError;
-
-        const passport_url = supabase.storage.from('passports').getPublicUrl(passportFileName).data.publicUrl;
-
-        // Insert into database
-        progressText.textContent = "Saving application...";
-        const formData = { /* ... same as before ... */ 
+        const formData = {
             full_name: document.getElementById('full_name').value.trim(),
             age: parseInt(document.getElementById('age').value),
             gender: document.getElementById('gender').value,
@@ -526,11 +539,13 @@ document.getElementById('applicationForm').addEventListener('submit', async func
             rejected: false
         };
 
-        const { error: dbError } = await supabase.from('applications').insert([formData]);
+        const { error: dbError } = await supabase
+            .from('applications')
+            .insert([formData]);
 
         if (dbError) throw dbError;
 
-        // SUCCESS - Redirect to success.html
+        // SUCCESS
         window.location.href = "success.html";
 
     } catch (error) {
@@ -539,8 +554,7 @@ document.getElementById('applicationForm').addEventListener('submit', async func
     } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalBtnText;
-        // Remove progress bar after completion
-        setTimeout(() => progressBarContainer.remove(), 1000);
+        setTimeout(() => progressContainer.remove(), 1500);
     }
 });
 </script>
