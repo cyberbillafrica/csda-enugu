@@ -13,7 +13,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Parse the full JSON from environment variable
     const serviceAccount = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
 
     const auth = new google.auth.GoogleAuth({
@@ -23,7 +22,8 @@ export default async function handler(req, res) {
 
     const drive = google.drive({ version: 'v3', auth });
 
-    const response = await drive.files.create({
+    // Create resumable upload session
+    const { headers } = await drive.files.create({
       requestBody: {
         name: filename,
         parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],
@@ -36,10 +36,10 @@ export default async function handler(req, res) {
       uploadType: 'resumable',
     });
 
-    const uploadUrl = response.headers.location;
+    const uploadUrl = headers.location || headers.Location;
 
     if (!uploadUrl) {
-      throw new Error('Failed to get resumable upload URL');
+      throw new Error('No resumable upload URL returned from Google Drive');
     }
 
     res.status(200).json({
