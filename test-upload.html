@@ -70,13 +70,29 @@ document.getElementById('testForm').addEventListener('submit', async function(e)
 
         // 2. Insert to Supabase
         console.log("Inserting to Supabase...");
-        const { error } = await supabase.from('applications').insert([{
-            full_name: document.getElementById('full_name').value,
-            nin: document.getElementById('nin').value,
-            skill_evidence_url: skill_url,
-            passport_url: passport_url,
-            status: "pending"
-        }]);
+       // Inside the try block, replace the insert part with this:
+const { error } = await supabase.from('applications').insert([{
+    full_name: document.getElementById('full_name').value || "Test User",
+    age: 30,                          // ← Add this
+    gender: "Male",                   // ← Add this
+    lga: "Nsukka",                    // ← Add this
+    ward: "Nsukka Urban",             // ← Add this
+    village: "Test Village",
+    community: "Test Community",
+    phone: "08012345678",
+    nin: document.getElementById('nin').value,
+    account_name: "Test Account",
+    account_number: "1234567890",
+    bank_name: "Test Bank",
+    skill_type: "Tailoring",
+    empowerment_choice: "Sewing Machine",
+    skill_evidence_url: skill_url,
+    passport_url: passport_url,
+    status: "pending",
+    shortlisted: false,
+    selected: false,
+    rejected: false
+}]);
 
         if (error) throw error;
 
