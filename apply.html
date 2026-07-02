@@ -420,144 +420,34 @@ document.addEventListener('DOMContentLoaded', function() {
     <script>
 
 // ====================== GOOGLE DRIVE UPLOAD HELPERS ======================
-async function uploadFileToDrive(file, prefix) {
-    const filename = `${prefix}_${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+// api/upload-links.js
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
-    // 1. Get resumable upload URL
-    const linkRes = await fetch('/api/upload-links', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            filename, 
-            mimeType: file.type 
-        }),
+  console.log("Environment Variables Check:");
+  console.log("GOOGLE_SERVICE_ACCOUNT_EMAIL:", !!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL);
+  console.log("GOOGLE_PRIVATE_KEY exists:", !!process.env.GOOGLE_PRIVATE_KEY);
+  console.log("GOOGLE_DRIVE_FOLDER_ID:", !!process.env.GOOGLE_DRIVE_FOLDER_ID);
+
+  const { filename, mimeType } = req.body;
+
+  if (!filename || !mimeType) {
+    return res.status(400).json({ error: 'filename and mimeType required' });
+  }
+
+  try {
+    res.status(200).json({ 
+      success: true, 
+      message: "Debug mode - API is reachable",
+      driveUploadUrl: "https://debug-upload-url.com" 
     });
-
-    if (!linkRes.ok) throw new Error('Failed to get upload link');
-    const { driveUploadUrl } = await linkRes.json();
-
-    // 2. Upload file
-    const uploadRes = await fetch(driveUploadUrl, {
-        method: 'PUT',
-        body: file,
-        headers: {
-            'Content-Type': file.type,
-            'Content-Length': file.size.toString(),
-        },
-    });
-
-    if (!uploadRes.ok) throw new Error('File upload failed');
-
-    return filename;
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
 }
-
-// ====================== MAIN FORM SUBMISSION ======================
-document.getElementById('applicationForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-
-    const submitBtn = this.querySelector('button[type="submit"]');
-    const originalBtnText = submitBtn.innerHTML;
-    const progressContainer = document.createElement('div');
-    progressContainer.className = 'mt-3';
-    progressContainer.innerHTML = `
-        <div class="progress" style="height: 10px;">
-            <div id="uploadProgress" class="progress-bar progress-bar-striped progress-bar-animated bg-success" 
-                 style="width: 0%">0%</div>
-        </div>
-        <small id="progressText" class="text-muted">Preparing upload...</small>
-    `;
-    submitBtn.parentNode.appendChild(progressContainer);
-
-    const progressBar = document.getElementById('uploadProgress');
-    const progressText = document.getElementById('progressText');
-
-    try {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = "Uploading files...";
-
-        const skillFile = document.getElementById('skill_evidence').files[0];
-        const passportFile = document.getElementById('passport').files[0];
-
-        if (!skillFile || !passportFile) {
-            throw new Error("Both files are required.");
-        }
-
-        // === UPLOAD FILES ===
-        progressText.textContent = "Uploading Skill Evidence...";
-        const skillFilename = await uploadFileToDrive(skillFile, 'skill');
-
-        progressText.textContent = "Uploading Passport...";
-        const passportFilename = await uploadFileToDrive(passportFile, 'passport');
-
-        // === GET PUBLIC LINKS ===
-        progressText.textContent = "Finalizing...";
-        const linkRes = await fetch('/api/get-drive-links', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                filenames: [skillFilename, passportFilename] 
-            }),
-        });
-
-        const { links } = await linkRes.json();
-        const skill_evidence_url = links[0];
-        const passport_url = links[1];
-
-        // === NIN DUPLICATE CHECK + DATABASE INSERT ===
-        const nin = document.getElementById('nin').value.trim();
-
-        const { data: existing } = await supabase
-            .from('applications')
-            .select('id')
-            .eq('nin', nin)
-            .limit(1);
-
-        if (existing && existing.length > 0) {
-            throw new Error("You have already submitted an application with this NIN.");
-        }
-
-        const formData = {
-            full_name: document.getElementById('full_name').value.trim(),
-            age: parseInt(document.getElementById('age').value),
-            gender: document.getElementById('gender').value,
-            lga: document.getElementById('lga').value,
-            ward: document.getElementById('ward').value,
-            village: document.getElementById('village').value.trim(),
-            community: document.getElementById('community').value.trim(),
-            phone: document.getElementById('phone').value.trim(),
-            nin: nin,
-            account_name: document.getElementById('account_name').value.trim(),
-            account_number: document.getElementById('account_number').value.trim(),
-            bank_name: document.getElementById('bank_name').value.trim(),
-            skill_type: document.getElementById('skill_type').value.trim(),
-            empowerment_choice: document.getElementById('empowerment_choice').value,
-            skill_evidence_url,
-            passport_url,
-            status: "pending",
-            shortlisted: false,
-            selected: false,
-            rejected: false
-        };
-
-        const { error: dbError } = await supabase
-            .from('applications')
-            .insert([formData]);
-
-        if (dbError) throw dbError;
-
-        // SUCCESS
-        window.location.href = "success.html";
-
-    } catch (error) {
-        console.error(error);
-        alert("❌ " + error.message);
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalBtnText;
-        setTimeout(() => progressContainer.remove(), 1500);
-    }
-});
 </script>
-
 </body>
 </html>
