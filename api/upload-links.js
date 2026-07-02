@@ -1,7 +1,7 @@
 // api/upload-links.js
-const { google } = require('googleapis');
+import { google } from 'googleapis';
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -23,7 +23,6 @@ module.exports = async function handler(req, res) {
 
     const drive = google.drive({ version: 'v3', auth });
 
-    // Create resumable upload session
     const response = await drive.files.create({
       requestBody: {
         name: filename,
@@ -46,7 +45,6 @@ module.exports = async function handler(req, res) {
     res.status(200).json({
       success: true,
       driveUploadUrl: uploadUrl,
-      message: "Upload link generated successfully"
     });
 
   } catch (error) {
@@ -56,4 +54,4 @@ module.exports = async function handler(req, res) {
       details: error.message 
     });
   }
-};
+}
