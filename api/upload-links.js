@@ -22,29 +22,38 @@ export default async function handler(req, res) {
 
     const drive = google.drive({ version: 'v3', auth });
 
-    // Create resumable upload session
-    const { headers } = await drive.files.create({
-      requestBody: {
-        name: filename,
-        parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],
-      },
-      media: {
-        mimeType: mimeType,
-      },
+    // Create a file with metadata first (this is more reliable)
+    const fileMetadata = {
+      name: filename,
+      parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],
+    };
+
+    const media = {
+      mimeType: mimeType,
+    };
+
+    const { data: file } = await drive.files.create({
+      requestBody: fileMetadata,
+      media: media,
       fields: 'id',
-    }, {
-      uploadType: 'resumable',
     });
 
-    const uploadUrl = headers.location || headers.Location;
+    // Make it public
+    await drive.permissions.create({
+      fileId: file.id,
+      requestBody: {
+        role: 'reader',
+        type: 'anyone',
+      },
+    });
 
-    if (!uploadUrl) {
-      throw new Error('No resumable upload URL returned from Google Drive');
-    }
+    const publicUrl = `https://drive.google.com/file/d/${file.id}/view`;
 
     res.status(200).json({
       success: true,
-      driveUploadUrl: uploadUrl,
+      driveUploadUrl: null, // Not needed for simple upload
+      fileId: file.id,
+      publicUrl: publicUrl,
     });
 
   } catch (error) {
