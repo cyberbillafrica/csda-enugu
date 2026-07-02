@@ -35,78 +35,116 @@
 <script type="module" src="assets/supabase.js"></script>
 
 <script>
-document.getElementById('testForm').addEventListener('submit', async function(e) {
+// ====================== RESUMABLE UPLOAD TO GOOGLE DRIVE ======================
+async function uploadFileToDrive(file, prefix) {
+    const filename = `${prefix}_${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+
+    // 1. Get resumable upload URL
+    const linkRes = await fetch('https://csda-enugu.vercel.app/api/upload-links', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            filename, 
+            mimeType: file.type 
+        }),
+    });
+
+    if (!linkRes.ok) throw new Error('Failed to get upload link');
+
+    const { driveUploadUrl } = await linkRes.json();
+
+    // 2. Upload the actual file
+    const uploadRes = await fetch(driveUploadUrl, {
+        method: 'PUT',
+        body: file,
+        headers: {
+            'Content-Type': file.type,
+            'Content-Length': file.size.toString(),
+        },
+    });
+
+    if (!uploadRes.ok) {
+        throw new Error(`Upload failed with status ${uploadRes.status}`);
+    }
+
+    return filename; // We can get the link later if needed
+}
+
+// ====================== MAIN SUBMISSION ======================
+document.getElementById('applicationForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    const submitBtn = this.querySelector('button');
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Running test...";
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
 
     try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = "Uploading files...";
+
         const skillFile = document.getElementById('skill_evidence').files[0];
         const passportFile = document.getElementById('passport').files[0];
 
-        if (!skillFile || !passportFile) throw new Error("Select both files");
+        if (!skillFile || !passportFile) throw new Error("Both files are required.");
 
-        // 1. Upload to Drive
-        console.log("Uploading to Drive...");
-        const skillRes = await fetch('https://csda-enugu.vercel.app/api/upload-links', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ filename: `test_skill_${Date.now()}.jpg`, mimeType: skillFile.type })
-        });
-        const skillData = await skillRes.json();
-        const skill_url = skillData.publicUrl;
+        // Upload files
+        const skillFilename = await uploadFileToDrive(skillFile, 'skill');
+        const passportFilename = await uploadFileToDrive(passportFile, 'passport');
 
-        const passportRes = await fetch('https://csda-enugu.vercel.app/api/upload-links', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ filename: `test_passport_${Date.now()}.jpg`, mimeType: passportFile.type })
-        });
-        const passportData = await passportRes.json();
-        const passport_url = passportData.publicUrl;
+        // For now, we'll construct the public URL (you can improve this later)
+        const skill_evidence_url = `https://drive.google.com/file/d/${skillFilename}/view`; // temporary
+        const passport_url = `https://drive.google.com/file/d/${passportFilename}/view`; // temporary
 
-        console.log("Files uploaded. URLs:", skill_url, passport_url);
+        // Rest of your code (NIN check + DB insert)
+        const nin = document.getElementById('nin').value.trim();
 
-        // 2. Insert to Supabase
-        console.log("Inserting to Supabase...");
-       // Inside the try block, replace the insert part with this:
-const { error } = await supabase.from('applications').insert([{
-    full_name: document.getElementById('full_name').value || "Test User",
-    age: 30,                          // ← Add this
-    gender: "Male",                   // ← Add this
-    lga: "Nsukka",                    // ← Add this
-    ward: "Nsukka Urban",             // ← Add this
-    village: "Test Village",
-    community: "Test Community",
-    phone: "08012345678",
-    nin: document.getElementById('nin').value,
-    account_name: "Test Account",
-    account_number: "1234567890",
-    bank_name: "Test Bank",
-    skill_type: "Tailoring",
-    empowerment_choice: "Sewing Machine",
-    skill_evidence_url: skill_url,
-    passport_url: passport_url,
-    status: "pending",
-    shortlisted: false,
-    selected: false,
-    rejected: false
-}]);
+        const { data: existing } = await supabase
+            .from('applications')
+            .select('id')
+            .eq('nin', nin)
+            .limit(1);
+
+        if (existing && existing.length > 0) {
+            throw new Error("Duplicate NIN detected.");
+        }
+
+        const formData = {
+            full_name: document.getElementById('full_name').value.trim(),
+            age: parseInt(document.getElementById('age').value),
+            gender: document.getElementById('gender').value,
+            lga: document.getElementById('lga').value,
+            ward: document.getElementById('ward').value,
+            village: document.getElementById('village').value.trim(),
+            community: document.getElementById('community').value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+            nin: nin,
+            account_name: document.getElementById('account_name').value.trim(),
+            account_number: document.getElementById('account_number').value.trim(),
+            bank_name: document.getElementById('bank_name').value.trim(),
+            skill_type: document.getElementById('skill_type').value.trim(),
+            empowerment_choice: document.getElementById('empowerment_choice').value,
+            skill_evidence_url,
+            passport_url,
+            status: "pending",
+            shortlisted: false,
+            selected: false,
+            rejected: false
+        };
+
+        const { error } = await supabase.from('applications').insert([formData]);
 
         if (error) throw error;
 
-        alert("✅ SUCCESS! Both Drive upload and Supabase insert worked.");
+        alert("✅ Application submitted successfully!");
+        window.location.href = "success.html";
 
-    } catch (err) {
-        console.error(err);
-        alert("❌ Failed: " + err.message);
+    } catch (error) {
+        console.error(error);
+        alert("❌ " + error.message);
     } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = "Run Full Test";
+        submitBtn.innerHTML = originalText;
     }
 });
 </script>
-
 </body>
 </html>

@@ -12,6 +12,10 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'filename and mimeType are required' });
   }
 
+  // Note: For actual upload, we need the file in the request body
+  // This version expects the file to be sent as binary in the request
+  // But for simplicity, we'll assume the client uploads directly using the resumable URL.
+
   try {
     const serviceAccount = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
 
@@ -22,45 +26,32 @@ export default async function handler(req, res) {
 
     const drive = google.drive({ version: 'v3', auth });
 
-    // Create a file with metadata first (this is more reliable)
-    const fileMetadata = {
-      name: filename,
-      parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],
-    };
-
-    const media = {
-      mimeType: mimeType,
-    };
-
-    const { data: file } = await drive.files.create({
-      requestBody: fileMetadata,
-      media: media,
-      fields: 'id',
-    });
-
-    // Make it public
-    await drive.permissions.create({
-      fileId: file.id,
+    const { headers } = await drive.files.create({
       requestBody: {
-        role: 'reader',
-        type: 'anyone',
+        name: filename,
+        parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],
       },
+      media: {
+        mimeType: mimeType,
+      },
+      fields: 'id',
+    }, {
+      uploadType: 'resumable',
     });
 
-    const publicUrl = `https://drive.google.com/file/d/${file.id}/view`;
+    const uploadUrl = headers.location || headers.Location;
+
+    if (!uploadUrl) {
+      throw new Error('No resumable upload URL');
+    }
 
     res.status(200).json({
       success: true,
-      driveUploadUrl: null, // Not needed for simple upload
-      fileId: file.id,
-      publicUrl: publicUrl,
+      driveUploadUrl: uploadUrl,
     });
 
   } catch (error) {
-    console.error('Upload link generation error:', error);
-    res.status(500).json({ 
-      error: 'Failed to generate upload link',
-      details: error.message 
-    });
+    console.error(error);
+    res.status(500).json({ error: error.message });
   }
 }
