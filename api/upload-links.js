@@ -9,58 +9,82 @@ export default async function handler(req, res) {
     const { filename, mimeType, fileSize } = req.body;
 
     if (!filename || !mimeType) {
-        return res.status(400).json({ error: 'filename and mimeType are required' });
+        return res.status(400).json({
+            error: 'filename and mimeType are required'
+        });
     }
 
     try {
-        // ====================== GOOGLE DRIVE ======================
+        // ======================
+        // Validate environment variables
+        // ======================
+        if (!process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
+            throw new Error('GOOGLE_SERVICE_ACCOUNT_JSON is missing');
+        }
+
+        if (!process.env.GOOGLE_DRIVE_FOLDER_ID) {
+            throw new Error('GOOGLE_DRIVE_FOLDER_ID is missing');
+        }
+
+        // ======================
+        // Parse Service Account JSON
+        // ======================
+        const credentials = JSON.parse(
+            process.env.GOOGLE_SERVICE_ACCOUNT_JSON
+        );
+
+        // ======================
+        // Google Auth
+        // ======================
         const auth = new google.auth.GoogleAuth({
-            credentials: {
-                client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-                private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-            },
-            scopes: ['https://www.googleapis.com/auth/drive.file'],
+            credentials,
+            scopes: [
+                'https://www.googleapis.com/auth/drive.file'
+            ],
         });
 
-        const drive = google.drive({ version: 'v3', auth });
+        const drive = google.drive({
+            version: 'v3',
+            auth,
+        });
 
+        // ======================
         // Create resumable upload session
-        const response = await drive.files.create({
-            requestBody: {
-                name: filename,
-                parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],
+        // ======================
+        const response = await drive.files.create(
+            {
+                requestBody: {
+                    name: filename,
+                    parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],
+                },
+                media: {
+                    mimeType,
+                },
+                fields: 'id, webViewLink',
             },
-            media: {
-                mimeType: mimeType,
-            },
-            fields: 'id, webViewLink',
-        }, {
-            // This is important for resumable upload
-            uploadType: 'resumable',
-        });
+            {
+                uploadType: 'resumable',
+            }
+        );
 
         const uploadUrl = response.headers.location;
 
         if (!uploadUrl) {
-            throw new Error('Failed to get resumable upload URL');
+            throw new Error('Failed to generate resumable upload URL');
         }
 
-        // ====================== MEGA (Future / Secondary) ======================
-        // For now, we'll focus on Google Drive as primary
-        // MEGA client-side upload is complex and not ideal for large files on Vercel
-
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             driveUploadUrl: uploadUrl,
-            message: "Upload to Google Drive prepared successfully",
-            // You can add MEGA logic later as a background job
+            message: 'Upload link generated successfully',
         });
 
     } catch (error) {
         console.error('Upload link generation error:', error);
-        res.status(500).json({ 
+
+        return res.status(500).json({
             error: 'Failed to generate upload link',
-            details: error.message 
+            details: error.message,
         });
     }
 }
