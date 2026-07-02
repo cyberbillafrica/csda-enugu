@@ -419,35 +419,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <script>
 
-// ====================== GOOGLE DRIVE UPLOAD HELPERS ======================
-// api/upload-links.js
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+// ====================== DEBUG SUBMISSION HANDLER ======================
+document.getElementById('applicationForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
 
-  console.log("Environment Variables Check:");
-  console.log("GOOGLE_SERVICE_ACCOUNT_EMAIL:", !!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL);
-  console.log("GOOGLE_PRIVATE_KEY exists:", !!process.env.GOOGLE_PRIVATE_KEY);
-  console.log("GOOGLE_DRIVE_FOLDER_ID:", !!process.env.GOOGLE_DRIVE_FOLDER_ID);
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
 
-  const { filename, mimeType } = req.body;
+    try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = "Testing API...";
 
-  if (!filename || !mimeType) {
-    return res.status(400).json({ error: 'filename and mimeType required' });
-  }
+        const skillFile = document.getElementById('skill_evidence').files[0];
 
-  try {
-    res.status(200).json({ 
-      success: true, 
-      message: "Debug mode - API is reachable",
-      driveUploadUrl: "https://debug-upload-url.com" 
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error.message });
-  }
-}
+        if (!skillFile) {
+            alert("Please select a file to test");
+            return;
+        }
+
+        const res = await fetch('https://csda-enugu.vercel.app/api/upload-links', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                filename: `test_${Date.now()}.jpg`,
+                mimeType: skillFile.type
+            })
+        });
+
+        const data = await res.json();
+        console.log("API Response:", data);
+
+        if (res.ok) {
+            alert("✅ API is reachable!\n\nCheck browser console for details.");
+        } else {
+            alert("❌ API Error: " + JSON.stringify(data));
+        }
+
+    } catch (err) {
+        console.error(err);
+        alert("Connection Error: " + err.message);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+    }
+});
+
 </script>
 </body>
 </html>
